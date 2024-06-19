@@ -22,7 +22,7 @@ typedef struct {
 
 typedef struct {
     llist *node_list;
-    llist *edges;
+    llist  edges;
     int    node_list_size;
     int    edges_size;
 } graph_t;
@@ -235,6 +235,7 @@ graph_t *init_graph() {
     printf("%c\n", *c);
     llist_push(graph->node_list, c);
     graph->node_list_size++;
+    graph->edges = init_llist(sizeof(edge_t));
 
     return graph;
 }
@@ -275,8 +276,6 @@ node_t *graph_get_node(graph_t graph, char target) {
     return NULL;
 }
 
-
-
 int graph_add_edge(graph_t *graph, char src, char dst, int weight) {
     node_t *src_node = graph_get_node(*graph, src);
     if (src_node == NULL) {
@@ -290,13 +289,27 @@ int graph_add_edge(graph_t *graph, char src, char dst, int weight) {
         exit(1);
     }
 
-    edge_t edge = {
-        .src = graph_get_node(*graph, src),
-        .dst = graph_get_node(*graph, dst),
-        .weight = weight,
-    };
-    llist_push(graph->edges, &edge);
+ // edge_t edge = {
+ //     .src = graph_get_node(*graph, src),
+ //     .dst = graph_get_node(*graph, dst),
+ //     .weight = weight,
+ // };
+    edge_t *edge = new edge_t; 
+    edge->src = graph_get_node(*graph, src);
+    edge->dst = graph_get_node(*graph, dst);
+    edge->weight = weight;
+    printf("src: %c | dst: %c\n", *(char*)edge->src->data, *(char*)edge->dst->data);
+    llist_push(&graph->edges, &edge);
     graph->edges_size++;
+
+    printf("asd\n");
+
+    for (int i = 0; i < graph->node_list_size; i++) {
+        printf("cmp: %c == %c\n", *(char*)graph->node_list[i].head->data, src);
+        if (*(char*)graph->node_list[i].head->data == src) {
+            llist_push(&graph->node_list[i], dst_node); 
+        }
+    }
 
     return 0;
 }
@@ -350,6 +363,8 @@ int main(int argc, char *argv[]) {
     graph_add_node(graph, 'D');
     graph_add_node(graph, 'H');
     graph_add_node(graph, 'T');
+
+    graph_add_edge(graph, 'A', 'T', 5);
     graph_print_nodes(*graph);
 
     return 0;
