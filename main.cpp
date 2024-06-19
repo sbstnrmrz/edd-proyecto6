@@ -21,10 +21,8 @@ typedef struct {
 } edge_t;
 
 typedef struct {
-    llist *node_list;
-    llist  edges;
-    int    node_list_size;
-    int    edges_size;
+    std::vector<llist>  nodes;
+    std::vector<edge_t> edges;
 } graph_t;
 
 llist init_llist(size_t data_size) {
@@ -223,31 +221,26 @@ void llist_print(llist list) {
 graph_t *init_graph() {
     graph_t *graph = new graph_t; 
 
-    graph->node_list = new llist;
-    if (graph->node_list == NULL) {
-        printf("error initializing graph!\n");
-        exit(1);
-    }
-
-    graph->node_list[0] = init_llist(sizeof(char)); 
+//    graph->nodes.at(0) = init_llist(sizeof(char)); 
     char *c = new char; 
     *c = 'A';
     printf("%c\n", *c);
-    llist_push(graph->node_list, c);
-    graph->node_list_size++;
-    graph->edges = init_llist(sizeof(edge_t));
+
+    llist list = init_llist(sizeof(char));
+    llist_push(&list, c);
+    graph->nodes.push_back(list);
 
     return graph;
 }
 
 int graph_add_node(graph_t *graph, char node_id) {
-    if (graph->node_list_size < 1) {
+    if (graph->nodes.size() < 1) {
         printf("graph is empty!\n");
         return -1;
     }
 
-    for (int i = 0; i < graph->node_list_size; i++) {
-        if (*(char*)graph->node_list[i].head->data == node_id) {
+    for (int i = 0; i < graph->nodes.size(); i++) {
+        if (*(char*)graph->nodes.at(i).head->data == node_id) {
             printf("node %c: already exists!\n", node_id); 
             return -1;
         }
@@ -255,22 +248,23 @@ int graph_add_node(graph_t *graph, char node_id) {
 
     char *c = new char;
     *c = node_id;
-    graph->node_list = (llist*)realloc(graph->node_list, sizeof(llist) * (graph->node_list_size+1));
-    if (graph->node_list == NULL) {
-        printf("error adding node!\n");
-        exit(1);
-    }
-    graph->node_list[graph->node_list_size] = init_llist(sizeof(char));
-    graph->node_list[graph->node_list_size].head->data = c;
-    graph->node_list_size++;
+//  graph->nodes = (llist*)realloc(graph->node_list, sizeof(llist) * (graph->node_list_size+1));
+//  if (graph->node_list == NULL) {
+//      printf("error adding node!\n");
+//      exit(1);
+//  }
+    
+    llist list = init_llist(sizeof(char));
+    llist_push(&list, c);
+    graph->nodes.push_back(list);
 
     return 0;
 }
 
 node_t *graph_get_node(graph_t graph, char target) {
-    for (int i = 0; i < graph.node_list_size; i++) {
-        if (*(char*)graph.node_list[i].head->data == target) {
-            return graph.node_list[i].head;
+    for (int i = 0; i < graph.nodes.size(); i++) {
+        if (*(char*)graph.nodes.at(i).head->data == target) {
+            return graph.nodes.at(i).head;
         }
     }
     return NULL;
@@ -289,25 +283,25 @@ int graph_add_edge(graph_t *graph, char src, char dst, int weight) {
         exit(1);
     }
 
- // edge_t edge = {
- //     .src = graph_get_node(*graph, src),
- //     .dst = graph_get_node(*graph, dst),
- //     .weight = weight,
- // };
-    edge_t *edge = new edge_t; 
-    edge->src = graph_get_node(*graph, src);
-    edge->dst = graph_get_node(*graph, dst);
-    edge->weight = weight;
-    printf("src: %c | dst: %c\n", *(char*)edge->src->data, *(char*)edge->dst->data);
-    llist_push(&graph->edges, &edge);
-    graph->edges_size++;
+    edge_t edge = {0}; 
+    edge.src = graph_get_node(*graph, src);
+    edge.dst = graph_get_node(*graph, dst);
+    if (edge.src == NULL || edge.dst == NULL) {
+        printf("node doesnt exist!\n");
+        return -1;
+    }
+
+    edge.weight = weight;
+    printf("src: %c | dst: %c\n", *(char*)edge.src->data, *(char*)edge.dst->data);
+    graph->edges.push_back(edge);
 
     printf("asd\n");
 
-    for (int i = 0; i < graph->node_list_size; i++) {
-        printf("cmp: %c == %c\n", *(char*)graph->node_list[i].head->data, src);
-        if (*(char*)graph->node_list[i].head->data == src) {
-            llist_push(&graph->node_list[i], dst_node); 
+    for (int i = 0; i < graph->nodes.size(); i++) {
+        printf("cmp: %c == %c\n", *(char*)graph->nodes.at(i).head->data, *(char*)edge.src->data);
+        if (*(char*)graph->nodes.at(i).head->data == *(char*)edge.src->data) {
+            llist_push(&graph->nodes.at(i), edge.dst->data); 
+            break;
         }
     }
 
@@ -315,14 +309,14 @@ int graph_add_edge(graph_t *graph, char src, char dst, int weight) {
 }
 
 void graph_print_nodes(graph_t graph) {
-    if (graph.node_list_size < 1) {
+    if (graph.nodes.size() < 1) {
         printf("graph is empty!");
         return;
     }
 
-    printf("Nodes, size %zu:\n", graph.node_list->size);
-    for (int i = 0; i < graph.node_list_size; i++) {
-        node_t *node = graph.node_list[i].head;
+    printf("Nodes, size %zu:\n", graph.nodes.size());
+    for (int i = 0; i < graph.nodes.size(); i++) {
+        node_t *node = graph.nodes.at(i).head;
         printf("[%p] = %c -> ", node, *(char*)node->data);
         node = node->next;
         while (node != NULL) {
@@ -347,6 +341,7 @@ void print_mat(int **arr, int rows, int cols) {
 
 int main(int argc, char *argv[]) {
     graph_t *graph = init_graph();
+    printf("asd\n");
 //  llist list = init_llist(sizeof(char));
 //  char c = 'a';
 //  llist_push(&list, &c);
@@ -360,11 +355,16 @@ int main(int argc, char *argv[]) {
 //  }
 //  llist_print(list);
 
+    
     graph_add_node(graph, 'D');
+
     graph_add_node(graph, 'H');
     graph_add_node(graph, 'T');
+    graph_add_node(graph, 'R');
 
     graph_add_edge(graph, 'A', 'T', 5);
+    graph_add_edge(graph, 'A', 'R', 10);
+    graph_add_edge(graph, 'R', 'A', 15);
     graph_print_nodes(*graph);
 
     return 0;
