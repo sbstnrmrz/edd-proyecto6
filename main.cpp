@@ -21,6 +21,7 @@ typedef struct {
 } edge_t;
 
 typedef struct {
+    std::vector<std::vector<char>> arr;
     std::vector<llist>  nodes;
     std::vector<edge_t> edges;
 } graph_t;
@@ -271,31 +272,21 @@ node_t *graph_get_node(graph_t graph, char target) {
 }
 
 int graph_add_edge(graph_t *graph, char src, char dst, int weight) {
-    node_t *src_node = graph_get_node(*graph, src);
-    if (src_node == NULL) {
+    edge_t edge = {0}; 
+    edge.src = graph_get_node(*graph, src);
+    if (edge.src == NULL) {
         printf("Source node: '%c' doesnt exist\n", src);
         exit(1);
     }
-
-    node_t *dst_node = graph_get_node(*graph, dst);
-    if (dst_node == NULL) {
-        printf("Destination node: '%c' doesnt exist\n", src);
-        exit(1);
-    }
-
-    edge_t edge = {0}; 
-    edge.src = graph_get_node(*graph, src);
     edge.dst = graph_get_node(*graph, dst);
-    if (edge.src == NULL || edge.dst == NULL) {
-        printf("node doesnt exist!\n");
-        return -1;
+    if (edge.dst == NULL) {
+        printf("Destination node: '%c' doesnt exist\n", dst);
+        exit(1);
     }
 
     edge.weight = weight;
     printf("src: %c | dst: %c\n", *(char*)edge.src->data, *(char*)edge.dst->data);
     graph->edges.push_back(edge);
-
-    printf("asd\n");
 
     for (int i = 0; i < graph->nodes.size(); i++) {
         printf("cmp: %c == %c\n", *(char*)graph->nodes.at(i).head->data, *(char*)edge.src->data);
@@ -306,6 +297,27 @@ int graph_add_edge(graph_t *graph, char src, char dst, int weight) {
     }
 
     return 0;
+}
+
+void graph_delete_node(graph_t *graph, const char node_id) {
+    for (int i = 0; i < graph->nodes.size(); i++) {
+        if (*(char*)graph->nodes.at(i).head->data == node_id) {
+            graph->nodes.erase(graph->nodes.begin()+i); 
+            for (int j = 0; j < graph->nodes.size(); j++) {
+                node_t *node = graph->nodes.at(j).head;
+                int ind = 0;
+                while (node != NULL) {
+                    if (*(char*)node->data == node_id) {
+                        llist_delete(graph->nodes.at(j), ind); 
+
+                    }
+                    node = node->next;
+                    ind++;
+                }
+            } 
+        }
+
+    }
 }
 
 void graph_print_nodes(graph_t graph) {
@@ -336,8 +348,6 @@ void print_mat(int **arr, int rows, int cols) {
     }
     printf("\n");
 }
-
-
 
 int main(int argc, char *argv[]) {
     graph_t *graph = init_graph();
