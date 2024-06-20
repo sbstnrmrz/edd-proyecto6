@@ -223,10 +223,10 @@ void graph_print_node(graph_t graph, char node_id) {
     printf("\n");
 }
 
-void floyd_warshall(graph_t graph) {
-    std::vector<std::vector<int> > dist = graph.mat;
+std::vector<std::vector<int> > floyd_warshall_mat(std::vector<std::vector<int> > mat) {
+    std::vector<std::vector<int> > dist = mat;
 
-    int n = graph.ids.size();
+    int n = mat.size();
     for (int k = 0; k < n; k++) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -237,6 +237,59 @@ void floyd_warshall(graph_t graph) {
         }
     }
     print_mat(dist);
+    return dist;
+}
+
+void graph_is_connected(graph_t graph) {
+    std::vector<std::vector<int> > mat = floyd_warshall_mat(graph.mat);
+
+    int n = mat.size();
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == j) {
+                continue;
+            }
+            if (mat[j][i] == 0 || mat[j][i] == INF) {
+                printf("el grafo es conexo\n");
+                for (int i = 0; i < n; i++) {
+                    int check = 0;
+                    for (int j = 0; j < n; j++) {
+                        if (i == j) {
+                            continue;
+                        }
+//                      printf("fuente: %d == %d\n", graph.mat[i][j], graph.mat[j][i]);
+                        if (graph.mat[j][i] == 0 || graph.mat[j][i] == INF) {
+
+                            check++;
+                        }     
+                    }
+//                  printf("node %c = check: %d\n", graph.ids[i], check);
+                    if (check == n-1) {
+                        printf("nodo %c: es fuente\n", graph.ids[i]);
+                    }
+                }
+
+                for (int i = 0; i < n; i++) {
+                    int check = 0;
+                    for (int j = 0; j < n; j++) {
+                        if (i == j) {
+                            continue;
+                        }
+//                      printf("pozo: %d == %d\n", graph.mat[i][j], graph.mat[j][i]);
+                        if (graph.mat[i][j] == 0 || graph.mat[i][j] == INF) {
+                            check++;
+//                          printf("node %c = check: %d\n", graph.ids[i], check);
+                        }     
+                    }
+                    if (check == n-1) {
+                        printf("nodo %c: es pozo\n", graph.ids[i]);
+                    }
+                }
+                return;
+            }
+        }
+    }
+    printf("el grafo es fuertamente conexo\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -246,18 +299,11 @@ int main(int argc, char *argv[]) {
     graph_add_node(&graph, 'C');
     graph_add_node(&graph, 'D');
     graph_add_edge(&graph, 'A', 'C', 3);
-    graph_add_edge(&graph, 'B', 'A', 2);
+//  graph_add_edge(&graph, 'B', 'A', 2);
     graph_add_edge(&graph, 'C', 'B', 7);
     graph_add_edge(&graph, 'C', 'D', 1);
-    graph_add_edge(&graph, 'D', 'A', 6);
+//  graph_add_edge(&graph, 'D', 'A', 6);
     graph_add_edge(&graph, 'C', 'D', 1);
-//  graph_add_edge(&graph, 'B', 'B', 4);
-//  graph_add_edge(&graph, 'A', 'B', 4);
-//  graph_add_edge(&graph, 'A', 'C', 3);
-//  graph_add_edge(&graph, 'C', 'A', 4);
-//  graph_add_edge(&graph, 'A', 'A', 4);
-//  graph_add_edge(&graph, 'B', 'C', 8);
-//  graph_add_edge(&graph, 'C', 'B', 6);
 
     graph_print_adjacency_mat(graph);
 //  graph_delete_node(&graph, 'B');
@@ -272,7 +318,7 @@ int main(int argc, char *argv[]) {
     graph_print_nodes(graph);
 
     printf("warshall\n");
-    floyd_warshall(graph);
+    floyd_warshall_mat(graph.mat);
 //  graph_add_node(&graph, 'D');
     graph_print_adjacency_mat(graph);
 
@@ -282,6 +328,7 @@ int main(int argc, char *argv[]) {
     fflush(stdin);
 
     graph_print_node(graph, in);
+    graph_is_connected(graph);
 
     return 0;
 }
