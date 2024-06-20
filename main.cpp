@@ -252,39 +252,55 @@ void graph_is_connected(graph_t graph) {
             if (mat[j][i] == 0 || mat[j][i] == INF) {
                 printf("el grafo es conexo\n");
                 for (int i = 0; i < n; i++) {
-                    int check = 0;
+                    int check_fuente = 0;
+                    int check_pozo = 0;
                     for (int j = 0; j < n; j++) {
                         if (i == j) {
                             continue;
                         }
 //                      printf("fuente: %d == %d\n", graph.mat[i][j], graph.mat[j][i]);
                         if (graph.mat[j][i] == 0 || graph.mat[j][i] == INF) {
-
-                            check++;
+                            check_fuente++;
                         }     
                     }
-//                  printf("node %c = check: %d\n", graph.ids[i], check);
-                    if (check == n-1) {
-                        printf("nodo %c: es fuente\n", graph.ids[i]);
-                    }
-                }
 
-                for (int i = 0; i < n; i++) {
-                    int check = 0;
-                    for (int j = 0; j < n; j++) {
-                        if (i == j) {
+                    for (int k = 0; k < n; k++) {
+                        if (i == k) {
                             continue;
                         }
 //                      printf("pozo: %d == %d\n", graph.mat[i][j], graph.mat[j][i]);
-                        if (graph.mat[i][j] == 0 || graph.mat[i][j] == INF) {
-                            check++;
+                        if (graph.mat[i][k] == 0 || graph.mat[i][k] == INF) {
+                            check_pozo++;
 //                          printf("node %c = check: %d\n", graph.ids[i], check);
                         }     
                     }
-                    if (check == n-1) {
+
+//                  printf("node %c = check: %d\n", graph.ids[i], check);
+                    if (check_fuente == n-1) {
+                        printf("nodo %c: es fuente\n", graph.ids[i]);
+                    }
+                    if (check_pozo == n-1) {
                         printf("nodo %c: es pozo\n", graph.ids[i]);
                     }
+
                 }
+
+//              for (int i = 0; i < n; i++) {
+//                  int check = 0;
+//                  for (int j = 0; j < n; j++) {
+//                      if (i == j) {
+//                          continue;
+//                      }
+//                      printf("pozo: %d == %d\n", graph.mat[i][j], graph.mat[j][i]);
+//                      if (graph.mat[i][j] == 0 || graph.mat[i][j] == INF) {
+//                          check++;
+//                          printf("node %c = check: %d\n", graph.ids[i], check);
+//                      }     
+//                  }
+//                  if (check == n-1) {
+//                      printf("nodo %c: es pozo\n", graph.ids[i]);
+//                  }
+//              }
                 return;
             }
         }
