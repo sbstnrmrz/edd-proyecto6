@@ -8,7 +8,6 @@ int graph_add_node(graph_t *graph, char node_id) {
         }
     }
     graph->ids.push_back(node_id);
-    printf("pushed: %c\n", graph->ids.at(graph->ids.size()-1));
 
     std::vector<int> vec;
     for (int i = 0; i < graph->ids.size(); i++) {
@@ -36,14 +35,13 @@ int graph_add_edge(graph_t *graph, char src_node_id, char dst_node_id) {
         printf("destination node %c: doesnt exists!\n", dst_node_id);
         return -1;
     }
-    if (graph_check_edge(graph, src_node_id, src_node_id)) {
+    if (graph_check_edge(graph, src_node_id, dst_node_id)) {
         printf("edge %c -> %c already exists!\n", src_node_id, dst_node_id);
     }
 
     int src_index = graph_get_node_index(*graph, src_node_id); 
     int dst_index = graph_get_node_index(*graph, dst_node_id); 
     graph->mat[src_index][dst_index] = 1; 
-    graph->edge_count++;
     return 0;
 }
 
@@ -147,7 +145,25 @@ bool graph_check_edge(graph_t *graph, char src_node_id, char dst_node_id) {
     return false;
 }
 
-void print_mat(graph_t graph) {
+void graph_print_nodes(graph_t graph) {
+    if (graph.mat.size() < 1) {
+        printf("graph is empty!\n");
+        return;
+    }
+
+    printf("Nodes info:\n");
+    for (int i = 0; i < graph.mat.size(); i++) {
+        printf("%c -> ", graph.ids[i]);
+        for (int j = 0; j < graph.mat[i].size(); j++) {
+            if (graph.mat[i][j] == 1) {
+                printf("%c, ", graph.ids[j]);
+            } 
+        }
+        printf("\n");
+    }
+}
+
+void graph_print_adjacency_mat(graph_t graph) {
     printf("matrix size: %zux%zu\n ", graph.mat.size(), graph.mat[0].size());
     for (int i = 0; i < graph.mat.size(); i++) {
         printf(" %c", graph.ids[i]);
@@ -156,7 +172,6 @@ void print_mat(graph_t graph) {
     for (int i = 0; i < graph.mat.size(); i++) {
         printf("%c ", graph.ids[i]);
         for (int j = 0; j < graph.mat.at(i).size(); j++) {
-            
             printf("%d ", graph.mat[i][j]);
         }
         printf("\n");
@@ -173,15 +188,16 @@ int main(int argc, char *argv[]) {
     graph_add_edge(&graph, 'B', 'B');
     graph_add_edge(&graph, 'B', 'B');
     graph_add_edge(&graph, 'B', 'B');
+    graph_add_edge(&graph, 'A', 'B');
     graph_add_edge(&graph, 'A', 'C');
 
-
-    print_mat(graph);
+    graph_print_adjacency_mat(graph);
     graph_delete_node(&graph, 'B');
     printf("\n");
-    print_mat(graph);
+    graph_print_adjacency_mat(graph);
     graph_add_node(&graph, 'B');
-    print_mat(graph);
+    graph_print_adjacency_mat(graph);
+    graph_print_nodes(graph);
 
     return 0;
 }

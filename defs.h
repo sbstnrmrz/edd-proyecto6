@@ -15,7 +15,7 @@
     snprintf(str, 32, "del %s", file); \
     system(str);                       \
 }
-#elif __APPLE__ || _unix
+#elif __APPLE__ || unix
 #define CLEAR system("clear")
 #define SLEEP(secs) {                    \
     char str[32] = {0};                  \
@@ -40,11 +40,16 @@
 typedef struct {
     std::vector<std::vector<int> > mat;
     std::vector<char> ids;
-    int edge_count;
 } graph_t;
 
+int graph_add_node(graph_t *graph, char node_id);
+int graph_add_edge(graph_t *graph, char src_node_id, char dst_node_id);
+int graph_delete_node(graph_t *graph, char node_id);
+int graph_delete_edge(graph_t *graph, char src_node_id, char dst_node_id);
 bool graph_check_node(graph_t graph, char node_id);
 bool graph_check_edge(graph_t *graph, char src_node_id, char dst_node_id);
 int graph_get_node_index(graph_t graph, char node_id);
+void graph_print_adjacency_mat(graph_t graph);
+void graph_print_nodes(graph_t graph);
 
 #endif

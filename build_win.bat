@@ -159,3 +159,9 @@ set SRC=*.cpp set CC=g++ set CFLAGS=-Wall -Wextra set IDIR=C:/msys64/ucrt64/incl
 set SRC=*.cpp set CC=g++ set CFLAGS=-Wall -Wextra set IDIR=C:/msys64/ucrt64/include set LDIR=C:/msys64/ucrt64/lib set SRC=*.cpp set LIBS=-lm -lSDL3 -lSDL3_image -lSDL3_ttf
 set SRC=*.cpp set CC=g++ set CFLAGS=-Wall -Wextra set IDIR=C:/msys64/ucrt64/include set LDIR=C:/msys64/ucrt64/lib set SRC=*.cpp set LIBS=-lm -lSDL3 -lSDL3_image -lSDL3_ttf
 set SRC=*.cpp set CC=g++ set CFLAGS=-Wall -Wextra set IDIR=C:/msys64/ucrt64/include set LDIR=C:/msys64/ucrt64/lib set SRC=*.cpp set LIBS=-lm -lSDL3 -lSDL3_image -lSDL3_ttf
+set SRC=*.cpp set CC=g++ set CFLAGS=-Wall -Wextra set IDIR=C:/msys64/ucrt64/include set LDIR=C:/msys64/ucrt64/lib set SRC=*.cpp set LIBS=-lm -lSDL3 -lSDL3_image -lSDL3_ttf
+set SRC=*.cpp set CC=g++ set CFLAGS=-Wall -Wextra set IDIR=C:/msys64/ucrt64/include set LDIR=C:/msys64/ucrt64/lib set SRC=*.cpp set LIBS=-lm -lSDL3 -lSDL3_image -lSDL3_ttf
+set SRC=*.cpp set CC=g++ set CFLAGS=-Wall -Wextra set IDIR=C:/msys64/ucrt64/include set LDIR=C:/msys64/ucrt64/lib set SRC=*.cpp set LIBS=-lm -lSDL3 -lSDL3_image -lSDL3_ttf
+set SRC=*.cpp set CC=g++ set CFLAGS=-Wall -Wextra set IDIR=C:/msys64/ucrt64/include set LDIR=C:/msys64/ucrt64/lib set SRC=*.cpp set LIBS=-lm -lSDL3 -lSDL3_image -lSDL3_ttf
+set SRC=*.cpp set CC=g++ set CFLAGS=-Wall -Wextra set IDIR=C:/msys64/ucrt64/include set LDIR=C:/msys64/ucrt64/lib set SRC=*.cpp set LIBS=-lm -lSDL3 -lSDL3_image -lSDL3_ttf
+set SRC=*.cpp set CC=g++ set CFLAGS=-Wall -Wextra set IDIR=C:/msys64/ucrt64/include set LDIR=C:/msys64/ucrt64/lib set SRC=*.cpp set LIBS=-lm -lSDL3 -lSDL3_image -lSDL3_ttf
