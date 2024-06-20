@@ -2,7 +2,6 @@
 #define DEFS_H
 
 #include <iostream>
-#include <SDL3/SDL.h>
 
 #if __WIN32
 #define CLEAR system("cls")
@@ -16,7 +15,7 @@
     snprintf(str, 32, "del %s", file); \
     system(str);                       \
 }
-#elif __APPLE__
+#elif __APPLE__ || _unix
 #define CLEAR system("clear")
 #define SLEEP(secs) {                    \
     char str[32] = {0};                  \
