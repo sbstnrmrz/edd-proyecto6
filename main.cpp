@@ -195,13 +195,36 @@ void print_mat(std::vector<std::vector<int> > mat) {
     }
 }
 
+void graph_print_node(graph_t graph, char node_id) {
+    if (graph.mat.size() < 1) {
+        printf("graph is empty!\n");
+        return;
+    }
+
+    if (!graph_check_node(graph, node_id)) {
+        printf("node %c doesnt exists!\n", node_id);
+        return;
+    }
+
+    printf("Nodes info:\n");
+    int node_index = graph_get_node_index(graph, node_id);
+
+    printf("%c -> ", graph.ids[node_index]);
+    for (int i = 0; i < graph.mat[node_index].size(); i++) {
+        if (graph.mat[node_index][i] > 0) {
+            printf("(%c: %d), ", graph.ids[i], graph.mat[node_index][i]);
+        } 
+    }
+    printf("\n");
+}
+
 void floyd_warshall(graph_t graph) {
     std::vector<std::vector<int> > mat = graph.mat;
 
     for (int k = 0; k < mat.size(); k++) {
         for (int i = 0; i < mat.size(); i++) {
             for (int j = 0; j < mat[i].size(); j++) {
-                if (mat[i][k] + mat[k][j] < mat[i][j]) {
+                if (mat[i][k] + mat[k][j] < mat[i][j] && mat[i][k] + mat[k][j] >= 0) {
                     mat[i][j] = mat[i][k] + mat[k][j];
                 }
             }
@@ -216,7 +239,7 @@ int main(int argc, char *argv[]) {
     graph_add_node(&graph, 'A');
     graph_add_node(&graph, 'B');
     graph_add_node(&graph, 'C');
-//  graph_add_edge(&graph, 'A', 'B', 2);
+    graph_add_edge(&graph, 'A', 'B', 2);
 //  graph_add_edge(&graph, 'B', 'A', 2);
 //  graph_add_edge(&graph, 'B', 'B', 4);
 //  graph_add_edge(&graph, 'B', 'B', 4);
@@ -242,6 +265,17 @@ int main(int argc, char *argv[]) {
 
     printf("warshall\n");
     floyd_warshall(graph);
+    graph_add_node(&graph, 'D');
+    graph_print_adjacency_mat(graph);
+
+
+
+    char in = 0;
+    printf("insert node to check: ");
+    scanf(" %c", &in);
+    fflush(stdin);
+
+    graph_print_node(graph, in);
 
     return 0;
 }
