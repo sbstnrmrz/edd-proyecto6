@@ -36,6 +36,7 @@
 #define CHAR2INT(x) x - '0'
 #define INT2CHAR(x) x + '0'
 #define ARRAY_LEN(x) sizeof(x)/sizeof(x[0])
+#define INF -999
 
 typedef struct {
     std::vector<std::vector<int> > mat;
@@ -43,7 +44,7 @@ typedef struct {
 } graph_t;
 
 int graph_add_node(graph_t *graph, char node_id);
-int graph_add_edge(graph_t *graph, char src_node_id, char dst_node_id);
+int graph_add_edge(graph_t *graph, char src_node_id, char dst_node_id, int weight);
 int graph_delete_node(graph_t *graph, char node_id);
 int graph_delete_edge(graph_t *graph, char src_node_id, char dst_node_id);
 bool graph_check_node(graph_t graph, char node_id);
@@ -51,5 +52,6 @@ bool graph_check_edge(graph_t *graph, char src_node_id, char dst_node_id);
 int graph_get_node_index(graph_t graph, char node_id);
 void graph_print_adjacency_mat(graph_t graph);
 void graph_print_nodes(graph_t graph);
+
 
 #endif
