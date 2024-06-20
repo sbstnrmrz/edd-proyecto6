@@ -36,7 +36,7 @@
 #define CHAR2INT(x) x - '0'
 #define INT2CHAR(x) x + '0'
 #define ARRAY_LEN(x) sizeof(x)/sizeof(x[0])
-#define INF -999
+#define INF 9999
 
 typedef struct {
     std::vector<std::vector<int> > mat;

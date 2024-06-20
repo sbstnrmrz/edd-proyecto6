@@ -11,14 +11,14 @@ int graph_add_node(graph_t *graph, char node_id) {
 
     std::vector<int> vec;
     for (int i = 0; i < graph->ids.size()-1; i++) {
-        vec.push_back(-1);
+        vec.push_back(INF);
     }
     vec.push_back(0);
     
     graph->mat.push_back(vec); 
     for (int i = 0; i < graph->ids.size()-1; i++) {
         graph->mat[i].resize(graph->ids.size());
-        graph->mat[i].at(graph->mat[i].size()-1) = -1;
+        graph->mat[i].at(graph->mat[i].size()-1) = INF;
     }
     
     return 0;
@@ -96,7 +96,7 @@ int graph_delete_edge(graph_t *graph, char src_node_id, char dst_node_id) {
     if (graph_check_edge(graph, src_node_id, dst_node_id)) {
         int src_index = graph_get_node_index(*graph, src_node_id); 
         int dst_index = graph_get_node_index(*graph, dst_node_id); 
-        graph->mat[src_index][dst_index] = 0;
+        graph->mat[src_index][dst_index] = INF;
         return 0;
     }
     
@@ -146,7 +146,7 @@ bool graph_check_edge(graph_t *graph, char src_node_id, char dst_node_id) {
 
     int src_index = graph_get_node_index(*graph, src_node_id); 
     int dst_index = graph_get_node_index(*graph, dst_node_id); 
-    if (graph->mat[src_index][dst_index] > 0) {
+    if (graph->mat[src_index][dst_index] != INF) {
         return true;
     }
 
@@ -163,13 +163,14 @@ void graph_print_nodes(graph_t graph) {
     for (int i = 0; i < graph.mat.size(); i++) {
         printf("%c -> ", graph.ids[i]);
         for (int j = 0; j < graph.mat[i].size(); j++) {
-            if (graph.mat[i][j] > 0) {
+            if (graph.mat[i][j] > 0 && graph.mat[i][j] != INF) {
                 printf("(%c: %d), ", graph.ids[j], graph.mat[i][j]);
             } 
         }
         printf("\n");
     }
 }
+
 
 void graph_print_adjacency_mat(graph_t graph) {
     printf("matrix size: %zux%zu\n ", graph.mat.size(), graph.mat[0].size());
@@ -180,7 +181,7 @@ void graph_print_adjacency_mat(graph_t graph) {
     for (int i = 0; i < graph.mat.size(); i++) {
         printf("%c ", graph.ids[i]);
         for (int j = 0; j < graph.mat[i].size(); j++) {
-            printf("%c ", graph.mat[i][j] > -1 ? INT2CHAR(graph.mat[i][j]) : '~');
+            printf("%c ", graph.mat[i][j] != INF ? INT2CHAR(graph.mat[i][j]) : '~');
         }
         printf("\n");
     }
@@ -189,7 +190,11 @@ void graph_print_adjacency_mat(graph_t graph) {
 void print_mat(std::vector<std::vector<int> > mat) {
     for (int i = 0; i < mat.size(); i++) {
         for (int j = 0; j < mat[i].size(); j++) {
-            printf("%d ", mat[i][j]);
+            if (mat[i][j] != INF) {
+                printf("%d ", mat[i][j]);
+            } else {
+                printf("~ ");
+            }
         }
         printf("\n");
     }
@@ -211,7 +216,7 @@ void graph_print_node(graph_t graph, char node_id) {
 
     printf("%c -> ", graph.ids[node_index]);
     for (int i = 0; i < graph.mat[node_index].size(); i++) {
-        if (graph.mat[node_index][i] > 0) {
+        if (graph.mat[node_index][i] > 0 && graph.mat[node_index][i] != INF) {
             printf("(%c: %d), ", graph.ids[i], graph.mat[node_index][i]);
         } 
     }
@@ -219,19 +224,19 @@ void graph_print_node(graph_t graph, char node_id) {
 }
 
 void floyd_warshall(graph_t graph) {
-    std::vector<std::vector<int> > mat = graph.mat;
+    std::vector<std::vector<int> > dist = graph.mat;
 
-    for (int k = 0; k < mat.size(); k++) {
-        for (int i = 0; i < mat.size(); i++) {
-            for (int j = 0; j < mat[i].size(); j++) {
-                if (mat[i][k] + mat[k][j] < mat[i][j] && mat[i][k] + mat[k][j] >= 0) {
-                    mat[i][j] = mat[i][k] + mat[k][j];
+    int n = graph.ids.size();
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (dist[i][k] + dist[k][j] < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
                 }
             }
         }
     }
-
-    print_mat(mat);
+    print_mat(dist);
 }
 
 int main(int argc, char *argv[]) {
@@ -239,10 +244,13 @@ int main(int argc, char *argv[]) {
     graph_add_node(&graph, 'A');
     graph_add_node(&graph, 'B');
     graph_add_node(&graph, 'C');
-    graph_add_edge(&graph, 'A', 'B', 2);
-//  graph_add_edge(&graph, 'B', 'A', 2);
-//  graph_add_edge(&graph, 'B', 'B', 4);
-//  graph_add_edge(&graph, 'B', 'B', 4);
+    graph_add_node(&graph, 'D');
+    graph_add_edge(&graph, 'A', 'C', 3);
+    graph_add_edge(&graph, 'B', 'A', 2);
+    graph_add_edge(&graph, 'C', 'B', 7);
+    graph_add_edge(&graph, 'C', 'D', 1);
+    graph_add_edge(&graph, 'D', 'A', 6);
+    graph_add_edge(&graph, 'C', 'D', 1);
 //  graph_add_edge(&graph, 'B', 'B', 4);
 //  graph_add_edge(&graph, 'A', 'B', 4);
 //  graph_add_edge(&graph, 'A', 'C', 3);
@@ -265,10 +273,8 @@ int main(int argc, char *argv[]) {
 
     printf("warshall\n");
     floyd_warshall(graph);
-    graph_add_node(&graph, 'D');
+//  graph_add_node(&graph, 'D');
     graph_print_adjacency_mat(graph);
-
-
 
     char in = 0;
     printf("insert node to check: ");
