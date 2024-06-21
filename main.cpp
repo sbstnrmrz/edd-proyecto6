@@ -1,6 +1,4 @@
 #include "defs.h"
-#include <cstring>
-#include <string>
 
 int graph_add_node(graph_t *graph, char node_id) {
     for (int i = 0; i < graph->ids.size(); i++) {
@@ -129,10 +127,10 @@ int graph_get_node_index(graph_t graph, char node_id) {
 }
 
 bool graph_check_node(graph_t graph, char node_id) {
-    if (graph.mat.size() < 1) {
-        printf("graph is empty!\n");
-        return false;
-    }
+//  if (graph.mat.size() < 1) {
+//      printf("graph is empty!\n");
+//      return false;
+//  }
 
     for (int i = 0; i < graph.ids.size(); i++) {
         if (graph.ids[i] == node_id) {
@@ -174,6 +172,7 @@ void graph_print_nodes(graph_t graph) {
         }
         printf("\n");
     }
+    printf("\n");
 }
 
 
@@ -291,6 +290,47 @@ void graph_is_connected(graph_t graph) {
     printf("el grafo es fuertamente conexo\n");
 }
 
+void dijkstra(graph_t graph, int start) {
+    int n = graph.mat.size();
+
+    int dist[n];
+    bool visited[n];
+
+    for (int i = 0; i < n; i++) {
+        dist[i] = INF;
+        visited[i] = false;
+    }
+
+    dist[start] = 0;
+
+    printf("Dijkstra desde el nodo %c:\n\n", graph.ids[start]);
+
+    for (int count = 0; count < n - 1; count++) {
+        int u = -1;
+        for (int i = 0; i < n; i++) {
+            if (!visited[i] && (u == -1 || dist[i] < dist[u])) {
+                u = i;
+            }
+        }
+
+        visited[u] = true;
+
+        for (int v = 0; v < n; v++) {
+            if (!visited[v] && graph.mat[u][v] && dist[u] != INF && dist[u] + graph.mat[u][v] < dist[v]) {
+                dist[v] = dist[u] + graph.mat[u][v];
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (dist[i] == INF) {
+            printf("Vertice %c es inalcanzable desde vertice %d\n", graph.ids[start], start);
+        } else {
+            printf("Distancia del vertice %c al vertice %c es: %d\n", graph.ids[start], graph.ids[i], dist[i]);
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
     graph_t graph;
 
@@ -308,9 +348,7 @@ int main(int argc, char *argv[]) {
         char src_node_id = str[0];
         char dst_node_id = str[3];
         int weight = CHAR2INT(str[5]);
-        printf("%c -> %c %d\n", src_node_id, dst_node_id, weight);
         std::string sub = str.substr(1, 2);
-        printf("sub: %s\n", sub.c_str());
         graph_add_edge(&graph, src_node_id, dst_node_id, weight);
     }
 
@@ -319,41 +357,7 @@ int main(int argc, char *argv[]) {
     graph_print_adjacency_mat(graph);
     graph_print_nodes(graph);
 
-//  graph_add_node(&graph, 'A');
-//  graph_add_node(&graph, 'B');
-//  graph_add_node(&graph, 'C');
-//  graph_add_node(&graph, 'D');
-//  graph_add_edge(&graph, 'A', 'C', 3);
-//  graph_add_edge(&graph, 'B', 'A', 2);
-//  graph_add_edge(&graph, 'C', 'B', 7);
-//  graph_add_edge(&graph, 'C', 'D', 1);
-//  graph_add_edge(&graph, 'D', 'A', 6);
-//  graph_add_edge(&graph, 'C', 'D', 1);
-
-//  graph_print_adjacency_mat(graph);
-//  graph_delete_node(&graph, 'B');
-//  printf("\n");
-//  graph_print_adjacency_mat(graph);
-//  graph_add_node(&graph, 'B');
-//  graph_print_adjacency_mat(graph);
-//  graph_print_nodes(graph);
-//  graph_delete_node(&graph, 'A');
-
-//  graph_print_adjacency_mat(graph);
-//  graph_print_nodes(graph);
-
-//  printf("warshall\n");
-//  floyd_warshall_mat(graph.mat);
-//  graph_add_node(&graph, 'D');
-//  graph_print_adjacency_mat(graph);
-
-//  char in = 0;
-//  printf("insert node to check: ");
-//  scanf(" %c", &in);
-//  fflush(stdin);
-
-//  graph_print_node(graph, in);
-//  graph_is_connected(graph);
+    dijkstra(graph, 3);
 
     return 0;
 }
