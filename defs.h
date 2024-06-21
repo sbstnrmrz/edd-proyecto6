@@ -2,6 +2,8 @@
 #define DEFS_H
 
 #include <iostream>
+#include <fstream>
+#include <vector>
 
 #if __WIN32
 #define CLEAR system("cls")

@@ -1,4 +1,6 @@
 #include "defs.h"
+#include <cstring>
+#include <string>
 
 int graph_add_node(graph_t *graph, char node_id) {
     for (int i = 0; i < graph->ids.size(); i++) {
@@ -25,19 +27,22 @@ int graph_add_node(graph_t *graph, char node_id) {
 }
 
 int graph_add_edge(graph_t *graph, char src_node_id, char dst_node_id, int weight) {
-    if (graph->mat.size() < 1) {
-        printf("graph is empty!\n");
-        return -1;
-    }
+//  if (graph->mat.size() < 1) {
+//      printf("graph is empty!\n");
+//      return -1;
+//  }
 
     if (!graph_check_node(*graph, src_node_id)) {
-        printf("source node %c: doesnt exists!\n", src_node_id);
-        return -1;
+        graph_add_node(graph, src_node_id);
+//      printf("source node %c: doesnt exists!\n", src_node_id);
+//      return -1;
     }
     if (!graph_check_node(*graph, dst_node_id)) {
-        printf("destination node %c: doesnt exists!\n", dst_node_id);
-        return -1;
+        graph_add_node(graph, dst_node_id);
+//      printf("destination node %c: doesnt exists!\n", dst_node_id);
+//      return -1;
     }
+
     if (graph_check_edge(graph, src_node_id, dst_node_id)) {
         printf("edge %c -> %c already exists!\n", src_node_id, dst_node_id);
         return -1;
@@ -173,7 +178,7 @@ void graph_print_nodes(graph_t graph) {
 
 
 void graph_print_adjacency_mat(graph_t graph) {
-    printf("matrix size: %zux%zu\n ", graph.mat.size(), graph.mat[0].size());
+    printf("Tamano de la matriz de adyacencia: %zux%zu\n ", graph.mat.size(), graph.mat[0].size());
     for (int i = 0; i < graph.mat.size(); i++) {
         printf(" %c", graph.ids[i]);
     }
@@ -258,7 +263,6 @@ void graph_is_connected(graph_t graph) {
                         if (i == j) {
                             continue;
                         }
-//                      printf("fuente: %d == %d\n", graph.mat[i][j], graph.mat[j][i]);
                         if (graph.mat[j][i] == 0 || graph.mat[j][i] == INF) {
                             check_fuente++;
                         }     
@@ -268,39 +272,18 @@ void graph_is_connected(graph_t graph) {
                         if (i == k) {
                             continue;
                         }
-//                      printf("pozo: %d == %d\n", graph.mat[i][j], graph.mat[j][i]);
                         if (graph.mat[i][k] == 0 || graph.mat[i][k] == INF) {
                             check_pozo++;
-//                          printf("node %c = check: %d\n", graph.ids[i], check);
                         }     
                     }
 
-//                  printf("node %c = check: %d\n", graph.ids[i], check);
                     if (check_fuente == n-1) {
                         printf("nodo %c: es fuente\n", graph.ids[i]);
                     }
                     if (check_pozo == n-1) {
                         printf("nodo %c: es pozo\n", graph.ids[i]);
                     }
-
                 }
-
-//              for (int i = 0; i < n; i++) {
-//                  int check = 0;
-//                  for (int j = 0; j < n; j++) {
-//                      if (i == j) {
-//                          continue;
-//                      }
-//                      printf("pozo: %d == %d\n", graph.mat[i][j], graph.mat[j][i]);
-//                      if (graph.mat[i][j] == 0 || graph.mat[i][j] == INF) {
-//                          check++;
-//                          printf("node %c = check: %d\n", graph.ids[i], check);
-//                      }     
-//                  }
-//                  if (check == n-1) {
-//                      printf("nodo %c: es pozo\n", graph.ids[i]);
-//                  }
-//              }
                 return;
             }
         }
@@ -310,41 +293,67 @@ void graph_is_connected(graph_t graph) {
 
 int main(int argc, char *argv[]) {
     graph_t graph;
-    graph_add_node(&graph, 'A');
-    graph_add_node(&graph, 'B');
-    graph_add_node(&graph, 'C');
-    graph_add_node(&graph, 'D');
-    graph_add_edge(&graph, 'A', 'C', 3);
-//  graph_add_edge(&graph, 'B', 'A', 2);
-    graph_add_edge(&graph, 'C', 'B', 7);
-    graph_add_edge(&graph, 'C', 'D', 1);
-//  graph_add_edge(&graph, 'D', 'A', 6);
-    graph_add_edge(&graph, 'C', 'D', 1);
 
-    graph_print_adjacency_mat(graph);
-//  graph_delete_node(&graph, 'B');
-    printf("\n");
-    graph_print_adjacency_mat(graph);
-    graph_add_node(&graph, 'B');
+    std::fstream f;
+    f.open("arista.txt", std::ios::in);
+    if (!f.is_open()) {
+        printf("Error abriendo el archivo arista.txt\n");
+        exit(1);
+    }
+
+    std::string str;
+    std::getline(f, str);
+    int edge_count = std::stoi(str); 
+    while (std::getline(f, str)) {
+        char src_node_id = str[0];
+        char dst_node_id = str[3];
+        int weight = CHAR2INT(str[5]);
+        printf("%c -> %c %d\n", src_node_id, dst_node_id, weight);
+        std::string sub = str.substr(1, 2);
+        printf("sub: %s\n", sub.c_str());
+        graph_add_edge(&graph, src_node_id, dst_node_id, weight);
+    }
+
+    printf("Cantidad de nodos: %zu\n", graph.ids.size()-1);
+    printf("Cantidad de vertices: %d\n", edge_count);
     graph_print_adjacency_mat(graph);
     graph_print_nodes(graph);
+
+//  graph_add_node(&graph, 'A');
+//  graph_add_node(&graph, 'B');
+//  graph_add_node(&graph, 'C');
+//  graph_add_node(&graph, 'D');
+//  graph_add_edge(&graph, 'A', 'C', 3);
+//  graph_add_edge(&graph, 'B', 'A', 2);
+//  graph_add_edge(&graph, 'C', 'B', 7);
+//  graph_add_edge(&graph, 'C', 'D', 1);
+//  graph_add_edge(&graph, 'D', 'A', 6);
+//  graph_add_edge(&graph, 'C', 'D', 1);
+
+//  graph_print_adjacency_mat(graph);
+//  graph_delete_node(&graph, 'B');
+//  printf("\n");
+//  graph_print_adjacency_mat(graph);
+//  graph_add_node(&graph, 'B');
+//  graph_print_adjacency_mat(graph);
+//  graph_print_nodes(graph);
 //  graph_delete_node(&graph, 'A');
 
-    graph_print_adjacency_mat(graph);
-    graph_print_nodes(graph);
+//  graph_print_adjacency_mat(graph);
+//  graph_print_nodes(graph);
 
-    printf("warshall\n");
-    floyd_warshall_mat(graph.mat);
+//  printf("warshall\n");
+//  floyd_warshall_mat(graph.mat);
 //  graph_add_node(&graph, 'D');
-    graph_print_adjacency_mat(graph);
+//  graph_print_adjacency_mat(graph);
 
-    char in = 0;
-    printf("insert node to check: ");
-    scanf(" %c", &in);
-    fflush(stdin);
+//  char in = 0;
+//  printf("insert node to check: ");
+//  scanf(" %c", &in);
+//  fflush(stdin);
 
-    graph_print_node(graph, in);
-    graph_is_connected(graph);
+//  graph_print_node(graph, in);
+//  graph_is_connected(graph);
 
     return 0;
 }
